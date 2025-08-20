@@ -10,57 +10,91 @@
     <%- include('partials/header') %>
 
     <div id="app" class="container d-flex flex-column align-items-center">
-        <div class="container d-flex justify-content-center text-center border rounded p-3 mt-5">
-            <!-- 1.step gamemode -->
-            <div class="row row-cols-2 g-2 justify-content-start" v-show="gamemodeStep === 0">
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">Solo</button>
+        <!-- Game setup -->
+        <div class="container border rounded p-3 mt-5" v-if="gameReady === false">
+            <button class="btn fs-5" @click="goBack" :disabled="gameSetup.gamemodeStep===1"><i class="bi bi-arrow-left"></i></button>
+            <div class="progress mb-3" role="progressbar" aria-label="Game setup progress" :aria-valuenow="gameSetup.gamemodeStep" aria-valuemin="0" aria-valuemax="3">
+                <div class="progress-bar" :style="{ width: (gameSetup.gamemodeStep / 3) * 100 + '%' }">{{ Math.round((gameSetup.gamemodeStep / 3) * 100) }}%</div>
+            </div>
+            <div class="d-flex justify-content-center text-center">
+                <!-- 1.step gamemode -->
+                <div v-show="gameSetup.gamemodeStep === 1">
+                    <h3>Choose a game mode</h3>
+                    <div class="row row-cols-2 g-2 justify-content-start" v-show="gameSetup.gamemodeStep === 1">
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('solo')">Solo</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('ai')">vs AI</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('player')">vs Player</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">vs AI</button>
+                <!-- 2.step submode -->
+                <div v-show="gameSetup.gamemodeStep === 2">
+                    <h3>Choose a submode</h3>
+                    <div class="row row-cols-2 g-2 justify-content-start">
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('kanji')">Kanji only</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('hiragana')">Hiragana only</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('katakana')">Katakana only</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('hirakata')">Hiragana and katakana</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">vs Player</button>
+                <!-- 3.step difficulty -->
+                <div v-show="gameSetup.gamemodeStep === 3">
+                    <h3>Choose a difficulty</h3>
+                    <div class="row row-cols-2 g-2 justify-content-start">
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('n5')">N5</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('n4')">N4</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('n3')">N3</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('n2')">N2</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('n1')">N1</button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-primary btn-lg" @click="setupGame('tensai')">天才</button>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </div>
 
-            <!-- 2.step submode -->
-            <div class="row row-cols-2 g-2 justify-content-start" v-show="gamemodeStep === 1">
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">Kanji only</button>
-                </div>
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">Hiragana only</button>
-                </div>
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">Katakana only</button>
-                </div>
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">Hiragana and katakana</button>
-                </div>
+        <!-- Game -->
+        <div class="container border rounded p-3 mt-5" v-if="gameReady === true">
+            <!-- SOLO gamemode -->
+            <div>
+                <h2 class="text-center mb-4">Shiritori Game</h2>
+                <h4 class="text-center mb-4">Valid Words: {{  }}</h4>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>Last Word: {{  }}</h3>
+                        <input type="text" v-model="" @keyup.enter="" class="form-control" placeholder="Enter your word...">
+                        <div class="text-danger" v-if="">Invalid input</div>
+                        <button class="btn btn-success mt-2" @click="">Submit</button>
+                    </div>
+                    <div class="col-md-6">
+                        <h3>Word Meaning</h3>
+                        <!-- TODO: add explanation of oponents word -->
+                    </div>
             </div>
-            <!-- 3.step difficulty -->
-             <div class="row row-cols-2 g-2 justify-content-start" v-show="gamemodeStep === 2">
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">N5</button>
-                </div>
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">N4</button>
-                </div>
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">N3</button>
-                </div>
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">N2</button>
-                </div>
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">N1</button>
-                </div>
-                <div class="col">
-                    <button class="btn btn-primary btn-lg">Tensai</button>
-                </div>
-            </div>
-            
         </div>
     </div>
 
