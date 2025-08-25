@@ -12,6 +12,9 @@ const app = Vue.createApp({
                 difficulty: '',
             },
             gameReady: true,
+            userInput: '',
+            error: '',
+            lastWord: '',
         };
     },
     methods: {
@@ -38,6 +41,43 @@ const app = Vue.createApp({
                     console.error('Invalid gamemode step');
             }
         },
+        convertToKana(romaji) {
+            console.log(wanakana.toHiragana(romaji));
+            return wanakana.toHiragana(romaji); // or .toKatakana
+        },
+        submitWord() {
+            if (!this.userInput.trim()) {
+                this.error = 'Please enter a word';
+                return;
+            }
+
+            const kanaWord = this.convertToKana(this.userInput.trim());
+
+            if (kanaWord.endsWith('ん')) {
+                this.error = 'Game Over! You entered a word ending with ん.';
+                this.userInput = '';
+                return;
+            }
+
+            fetch(`/api/getNextWord/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ word: kanaWord })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    this.lastWord = data.nextWord;
+                })
+                .catch(err => {
+                    console.error('Fetch error:', err);
+                    this.error = 'An error occurred while fetching the next word.';
+            });
+            
+
+            this.userInput = ''; // Clear input after submission
+        }
     },
     mounted() {}
 }).mount('#app');
